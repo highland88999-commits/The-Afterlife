@@ -23,7 +23,7 @@
             color: #fff;
         }
 
-        /* Nexus Vortex Three.js Background */
+        /* Nexus Vortex Background (The Afterlife code) */
         #elysium-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -31,7 +31,7 @@
             z-index: -3;
         }
 
-        /* Slowed Video Overlay (0.3× speed) */
+        /* Slowed Video Overlay */
         #bg-video {
             position: fixed;
             top: 50%; left: 50%;
@@ -90,7 +90,7 @@
             50% { transform: translateY(6px); }
         }
 
-        /* Casket Catalog (appears ONLY after full dialogue) */
+        /* Casket Catalog (unlocks only after full dialogue) */
         #catalog {
             position: absolute;
             top: 0; left: 0;
@@ -112,7 +112,7 @@
 
         .casket-card {
             aspect-ratio: 4/4.2;
-            background: rgba(0, 0, 139, 0.35); /* dark blue transparent shader */
+            background: rgba(0, 0, 139, 0.35);
             backdrop-filter: blur(12px);
             border: 2px solid rgba(197, 160, 89, 0.4);
             border-radius: 18px;
@@ -177,15 +177,15 @@
 </head>
 <body>
 
-    <!-- Nexus Vortex Elysium Background (new Three.js code) -->
+    <!-- Nexus Vortex – The Afterlife Background (exact code you provided) -->
     <canvas id="elysium-canvas"></canvas>
 
-    <!-- Slowed Video Overlay (0.3× speed) -->
+    <!-- Slowed Video Overlay -->
     <video muted loop playsinline id="bg-video">
         <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
     </video>
 
-    <!-- Anubis Dialogue Box (MANDATORY sequential clicks) -->
+    <!-- Anubis Dialogue Box (mandatory click-through) -->
     <div id="dialogue-box" onclick="nextDialogue()">
         <p id="text-content"></p>
         <div class="arrow"></div>
@@ -195,7 +195,7 @@
     <div id="catalog">
         <div class="catalog-grid">
 
-            <!-- ALL websites from the entire thread – none omitted -->
+            <!-- ALL websites from the thread – none left out -->
             <a href="https://titancasket.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -205,6 +205,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
                 <div class="label">Titan Casket</div>
             </a>
+
             <a href="https://trustedcaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -214,6 +215,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
                 <div class="label">Trusted Caskets</div>
             </a>
+
             <a href="https://www.overnightcaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -223,6 +225,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
                 <div class="label">Overnight Caskets</div>
             </a>
+
             <a href="https://solacecaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -232,6 +235,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
                 <div class="label">Solace Caskets</div>
             </a>
+
             <a href="https://www.bestpricecaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -241,6 +245,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
                 <div class="label">Best Price Caskets</div>
             </a>
+
             <a href="https://www.costco.ca/caskets.html" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -250,6 +255,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
                 <div class="label">Costco Funeral Services</div>
             </a>
+
             <a href="https://casketdepot.ca" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -259,6 +265,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
                 <div class="label">Casket Depot</div>
             </a>
+
             <a href="https://www.havencasket.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -268,6 +275,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
                 <div class="label">Haven Casket &amp; Monument</div>
             </a>
+
             <a href="https://casketoutlet.ca" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -277,6 +285,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
                 <div class="label">Casket Outlet</div>
             </a>
+
             <a href="https://www.northerncasket.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -286,6 +295,7 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
                 <div class="label">Northern Casket</div>
             </a>
+
             <a href="https://www.memorials.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -302,7 +312,7 @@
     <script type="module">
         import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-        // Nexus Vortex Scene (exact code from your snippet)
+        // Nexus Vortex — The Afterlife Background (exact code you provided)
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x050505, 0.15);
 
@@ -370,7 +380,7 @@
     </script>
 
     <script>
-        // Slow the video to 0.3× speed
+        // Slow the video (0.3× speed)
         const video = document.getElementById('bg-video');
         video.playbackRate = 0.3;
         video.play();
