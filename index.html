@@ -57,7 +57,7 @@
             pointer-events: none;
         }
 
-        /* 3. INTRO STAGE (Box 1 over Box +) */
+        /* 3. INTRO STAGE */
         #intro-stage {
             position: relative;
             z-index: 10;
@@ -69,24 +69,18 @@
             transition: opacity 1s ease;
         }
 
-        /* Top 60% - Anubis Video */
         #top-section {
             height: 60vh;
             width: 100%;
             display: flex;
             justify-content: center;
-            align-items: flex-end; /* Sits video right above the divider line */
+            align-items: flex-end;
             overflow: hidden;
             background: radial-gradient(circle at center, #111 0%, #000 100%);
         }
 
-        #anubis-media {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Keeps character proportion perfect */
-        }
+        #anubis-media { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Bottom 40% - Dialogue Text */
         #bottom-section {
             height: 40vh;
             width: 100%;
@@ -103,8 +97,7 @@
         #dialogue-frame {
             width: 100%;
             max-width: 500px;
-            height: auto;
-            min-height: 120px;
+            min-height: 140px;
             border: 1px solid rgba(197, 160, 89, 0.4);
             padding: 20px;
             position: relative;
@@ -112,22 +105,7 @@
             box-sizing: border-box;
         }
 
-        #text-content {
-            font-size: 1.4rem;
-            line-height: 1.4;
-            color: #efefef;
-            margin: 0;
-        }
-
-        #tap-hint {
-            position: absolute;
-            bottom: 10px;
-            right: 15px;
-            font-family: 'Cinzel', serif;
-            font-size: 0.65rem;
-            color: var(--gold);
-            letter-spacing: 2px;
-        }
+        #text-content { font-size: 1.3rem; line-height: 1.4; color: #efefef; margin: 0; }
 
         /* 4. CATALOG PORTAL */
         #catalog-portal {
@@ -148,16 +126,16 @@
             flex-direction: column;
             align-items: center;
             padding: 45vh 0;
-            gap: 40px;
+            gap: 30px;
         }
 
         .casket-card {
-            flex: 0 0 280px;
+            flex: 0 0 240px;
             width: 85%;
-            max-width: 320px;
-            background: rgba(0, 0, 0, 0.8);
+            max-width: 340px;
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(197, 160, 89, 0.3);
+            border: 1px solid rgba(197, 160, 89, 0.25);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -165,19 +143,19 @@
             text-decoration: none;
             scroll-snap-align: center;
             transition: 0.4s ease;
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
         .casket-card.active {
             opacity: 1;
             border-color: var(--cyan);
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
             transform: scale(1.05);
         }
 
-        .icon-box { font-size: 3rem; color: var(--gold); margin-bottom: 15px; }
+        .icon-box { font-size: 2.5rem; color: var(--gold); margin-bottom: 12px; }
         .casket-card.active .icon-box { color: var(--cyan); }
-        .label { font-family: 'Cinzel', serif; color: #fff; letter-spacing: 2px; font-size: 0.9rem; }
+        .label { font-family: 'Cinzel', serif; color: #fff; letter-spacing: 2px; font-size: 0.85rem; text-align: center; padding: 0 10px; }
 
         #catalog-portal::-webkit-scrollbar { display: none; }
     </style>
@@ -196,10 +174,10 @@
                 <source src="https://files.catbox.moe/znctv1.mp4" type="video/mp4">
             </video>
         </div>
-        <div id="bottom-section" onclick="nextDialogue()">
+        <div id="bottom-section" onclick="handleDialogueClick()">
             <div id="dialogue-frame">
                 <p id="text-content"></p>
-                <div id="tap-hint">TAP TO CONTINUE</div>
+                <div style="position:absolute; bottom:10px; right:15px; font-family:'Cinzel'; font-size:0.6rem; color:var(--gold);">TAP TO CONTINUE</div>
             </div>
         </div>
     </div>
@@ -230,60 +208,92 @@
         }
         animate();
 
-        // --- Logic ---
-        const video = document.getElementById('anubis-media');
-        const stage = document.getElementById('intro-stage');
-        const canvas = document.getElementById('elysium-canvas');
-        const portal = document.getElementById('catalog-portal');
-
-        window.startExperience = () => {
-            document.getElementById('gatekeeper').style.opacity = '0';
-            setTimeout(() => document.getElementById('gatekeeper').style.display = 'none', 800);
-            video.muted = false;
-            video.play();
-            nextDialogue();
-        };
-
+        // --- Dialogue System ---
         const script = [
             "Hi, I'm <span style='color:#c5a059'>Anubis</span>!",
             "Welcome to the afterlife.",
             "Here you can purchase caskets.",
             "\"Funerals are a never dying industry.\"",
             "\"You can pick your perma-bed below.\"",
-            "We recommend memory foam linings...",
-            "Your perma-bed awaits."
+            "We recommend memory foam linings or you will not be granted access to <span style='color:#c5a059'>ELYSIUM</span>.",
+            "The market is open. Make your selection."
         ];
 
-        let i = 0;
-        window.nextDialogue = () => {
-            if(i < script.length) {
-                document.getElementById('text-content').innerHTML = script[i];
-                i++;
+        let lineIndex = 0;
+        let isTyping = false;
+
+        function typeWriter(text, element) {
+            isTyping = true;
+            element.innerHTML = "";
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    if (text.charAt(i) === '<') {
+                        let tag = text.substring(i, text.indexOf('>', i) + 1);
+                        element.innerHTML += tag;
+                        i += tag.length;
+                    } else {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                    }
+                    setTimeout(type, 20);
+                } else {
+                    isTyping = false;
+                }
+            }
+            type();
+        }
+
+        window.handleDialogueClick = () => {
+            if (isTyping) return;
+            if (lineIndex < script.length) {
+                typeWriter(script[lineIndex], document.getElementById('text-content'));
+                lineIndex++;
             } else {
-                stage.style.opacity = '0';
-                setTimeout(() => {
-                    stage.style.display = 'none';
-                    canvas.style.opacity = '1';
-                    portal.style.display = 'block';
-                    setTimeout(() => portal.style.opacity = '1', 100);
-                    updateCards();
-                }, 1000);
+                exitIntro();
             }
         };
 
-        const list = document.getElementById('card-list');
-        const vendors = [
+        function exitIntro() {
+            document.getElementById('intro-stage').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('intro-stage').style.display = 'none';
+                document.getElementById('elysium-canvas').style.opacity = '1';
+                document.getElementById('catalog-portal').style.display = 'block';
+                setTimeout(() => document.getElementById('catalog-portal').style.opacity = '1', 100);
+                updateCards();
+            }, 1000);
+        }
+
+        window.startExperience = () => {
+            document.getElementById('gatekeeper').style.opacity = '0';
+            setTimeout(() => document.getElementById('gatekeeper').style.display = 'none', 800);
+            const video = document.getElementById('anubis-media');
+            video.muted = false;
+            video.play();
+            handleDialogueClick();
+        };
+
+        // --- Extended Stores ---
+        const stores = [
             { n: "Titan Casket", u: "https://titancasket.com", i: "fa-box-open" },
+            { n: "Costco Caskets", u: "https://www.costco.com/funeral-caskets.html", i: "fa-cart-shopping" },
             { n: "Trusted Caskets", u: "https://trustedcaskets.com", i: "fa-cross" },
+            { n: "Walmart Funeral", u: "https://www.walmart.com/cp/caskets/1090407", i: "fa-store" },
             { n: "Overnight Caskets", u: "https://overnightcaskets.com", i: "fa-truck-fast" },
-            { n: "Casket Depot", u: "https://casketdepot.ca", i: "fa-vault" }
+            { n: "Casket Depot", u: "https://casketdepot.ca", i: "fa-vault" },
+            { n: "Skyline Caskets", u: "https://skylinecaskets.com", i: "fa-cloud" },
+            { n: "Eternal Caskets", u: "https://eternalcaskets.com", i: "fa-infinity" },
+            { n: "Best Price Caskets", u: "https://bestpricecaskets.com", i: "fa-tag" },
+            { n: "Fast Caskets", u: "https://fastcaskets.com", i: "fa-bolt" }
         ];
 
-        vendors.forEach(v => {
+        const list = document.getElementById('card-list');
+        stores.forEach(s => {
             const a = document.createElement('a');
             a.className = 'casket-card';
-            a.href = v.u; a.target = "_blank";
-            a.innerHTML = `<div class="icon-box"><i class="fa-solid ${v.i}"></i></div><div class="label">${v.n}</div>`;
+            a.href = s.u; a.target = "_blank";
+            a.innerHTML = `<div class="icon-box"><i class="fa-solid ${s.i}"></i></div><div class="label">${s.n.toUpperCase()}</div>`;
             list.appendChild(a);
         });
 
@@ -293,10 +303,10 @@
                 const r = c.getBoundingClientRect();
                 const m = r.top + r.height / 2;
                 const d = Math.abs(m - window.innerHeight / 2);
-                c.classList.toggle('active', d < 150);
+                c.classList.toggle('active', d < 120);
             });
         }
-        portal.addEventListener('scroll', updateCards);
+        document.getElementById('catalog-portal').addEventListener('scroll', updateCards);
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
