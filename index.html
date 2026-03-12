@@ -23,7 +23,7 @@
             color: #fff;
         }
 
-        /* Nexus Vortex Background (The Afterlife code) */
+        /* Nexus Vortex Background */
         #elysium-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -90,27 +90,33 @@
             50% { transform: translateY(6px); }
         }
 
-        /* Casket Catalog (unlocks only after full dialogue) */
+        /* CASKET CATALOG — HORIZONTAL SLIDER WITH SCROLL HIGHLIGHT */
         #catalog {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 15;
             display: none;
-            padding: 80px 40px;
-            overflow-y: auto;
+            padding: 80px 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
             background: radial-gradient(circle, transparent 30%, rgba(5,5,5,0.85) 80%);
+            scrollbar-width: none;
         }
 
-        .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        #catalog::-webkit-scrollbar { display: none; }
+
+        .catalog-slider {
+            display: flex;
             gap: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
+            padding: 20px 0;
+            width: max-content;
         }
 
         .casket-card {
+            width: 240px;
+            flex: 0 0 240px;
             aspect-ratio: 4/4.2;
             background: rgba(0, 0, 139, 0.35);
             backdrop-filter: blur(12px);
@@ -125,12 +131,14 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 25px rgba(0, 0, 139, 0.3);
+            scroll-snap-align: center;
         }
 
-        .casket-card:hover {
-            transform: scale(1.08) translateY(-10px);
+        .casket-card.active {
+            transform: scale(1.12);
             border-color: #c5a059;
-            box-shadow: 0 0 50px rgba(197, 160, 89, 0.6);
+            box-shadow: 0 0 60px rgba(197, 160, 89, 0.7);
+            z-index: 2;
         }
 
         .casket-card .video-mask {
@@ -177,7 +185,7 @@
 </head>
 <body>
 
-    <!-- Nexus Vortex – The Afterlife Background (exact code you provided) -->
+    <!-- Nexus Vortex Background -->
     <canvas id="elysium-canvas"></canvas>
 
     <!-- Slowed Video Overlay -->
@@ -185,17 +193,17 @@
         <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
     </video>
 
-    <!-- Anubis Dialogue Box (mandatory click-through) -->
+    <!-- Anubis Dialogue Box -->
     <div id="dialogue-box" onclick="nextDialogue()">
         <p id="text-content"></p>
         <div class="arrow"></div>
     </div>
 
-    <!-- Casket Catalog (unlocks only after full dialogue) -->
+    <!-- Casket Catalog — Horizontal Slider with Scroll Highlight -->
     <div id="catalog">
-        <div class="catalog-grid">
+        <div class="catalog-slider">
 
-            <!-- ALL websites from the thread – none left out -->
+            <!-- ALL websites from the entire thread – none omitted -->
             <a href="https://titancasket.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -203,7 +211,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
-                <div class="label">Titan Casket</div>
+                <div class="label">TITAN CASKET</div>
             </a>
 
             <a href="https://trustedcaskets.com" class="casket-card" target="_blank">
@@ -213,7 +221,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
-                <div class="label">Trusted Caskets</div>
+                <div class="label">TRUSTED CASKETS</div>
             </a>
 
             <a href="https://www.overnightcaskets.com" class="casket-card" target="_blank">
@@ -223,7 +231,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
-                <div class="label">Overnight Caskets</div>
+                <div class="label">OVERNIGHT CASKETS</div>
             </a>
 
             <a href="https://solacecaskets.com" class="casket-card" target="_blank">
@@ -233,7 +241,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
-                <div class="label">Solace Caskets</div>
+                <div class="label">SOLACE CASKETS</div>
             </a>
 
             <a href="https://www.bestpricecaskets.com" class="casket-card" target="_blank">
@@ -243,7 +251,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
-                <div class="label">Best Price Caskets</div>
+                <div class="label">BEST PRICE CASKETS</div>
             </a>
 
             <a href="https://www.costco.ca/caskets.html" class="casket-card" target="_blank">
@@ -253,7 +261,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
-                <div class="label">Costco Funeral Services</div>
+                <div class="label">COSTCO FUNERAL SERVICES</div>
             </a>
 
             <a href="https://casketdepot.ca" class="casket-card" target="_blank">
@@ -263,7 +271,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
-                <div class="label">Casket Depot</div>
+                <div class="label">CASKET DEPOT</div>
             </a>
 
             <a href="https://www.havencasket.com" class="casket-card" target="_blank">
@@ -273,7 +281,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
-                <div class="label">Haven Casket &amp; Monument</div>
+                <div class="label">HAVEN CASKET</div>
             </a>
 
             <a href="https://casketoutlet.ca" class="casket-card" target="_blank">
@@ -283,7 +291,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
-                <div class="label">Casket Outlet</div>
+                <div class="label">CASKET OUTLET</div>
             </a>
 
             <a href="https://www.northerncasket.com" class="casket-card" target="_blank">
@@ -293,7 +301,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
-                <div class="label">Northern Casket</div>
+                <div class="label">NORTHERN CASKET</div>
             </a>
 
             <a href="https://www.memorials.com" class="casket-card" target="_blank">
@@ -303,7 +311,7 @@
                     </video>
                 </div>
                 <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
-                <div class="label">Memorials.com</div>
+                <div class="label">MEMORIALS.COM</div>
             </a>
 
         </div>
@@ -312,10 +320,9 @@
     <script type="module">
         import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-        // Nexus Vortex — The Afterlife Background (exact code you provided)
+        // Nexus Vortex Background
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x050505, 0.15);
-
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -380,12 +387,11 @@
     </script>
 
     <script>
-        // Slow the video (0.3× speed)
+        // Slow video + dialogue
         const video = document.getElementById('bg-video');
         video.playbackRate = 0.3;
         video.play();
 
-        // Anubis Dialogue (mandatory click-through)
         const script = [
             "Hi, I'm <span style='color:#c5a059'>Anubis</span>!",
             "Welcome to the afterlife.",
@@ -419,6 +425,35 @@
         }
 
         window.onload = () => nextDialogue();
+
+        // SLIDER HIGHLIGHT LOGIC
+        const slider = document.getElementById('catalog');
+        const cards = document.querySelectorAll('.casket-card');
+
+        function highlightCenter() {
+            let closest = null;
+            let minDistance = Infinity;
+
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const distance = Math.abs(centerX - window.innerWidth / 2);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closest = card;
+                }
+            });
+
+            cards.forEach(c => c.classList.remove('active'));
+            if (closest) closest.classList.add('active');
+        }
+
+        slider.addEventListener('scroll', highlightCenter);
+        window.addEventListener('resize', highlightCenter);
+
+        // Initial highlight
+        setTimeout(highlightCenter, 800);
     </script>
 </body>
 </html>
