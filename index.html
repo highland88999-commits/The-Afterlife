@@ -6,7 +6,7 @@
     <title>Elysium Odyssey — Nexus Vortex</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond:ital,wght@0,400;1,500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond:wght@400;500&display=swap');
 
         :root {
             --gold: #c5a059;
@@ -22,85 +22,54 @@
             overflow: hidden;
         }
 
-        /* Video Intro Layer */
-        #intro-layer {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1000;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1.5s ease, visibility 1.5s;
-        }
-
-        #intro-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        #skip-btn {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 10px 20px;
-            font-family: 'Cinzel', serif;
-            cursor: pointer;
-            z-index: 1001;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
-
-        #skip-btn:hover { background: var(--gold); color: #000; }
-
-        /* The 3D Scene Background */
+        /* Background Three.js Canvas */
         #elysium-canvas {
             position: fixed;
             top: 0; left: 0;
-            z-index: 1;
+            z-index: -1; /* Behind everything */
+            width: 100%; height: 100%;
         }
 
-        /* Dialogue Box */
-        #dialogue-box {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            max-width: 800px;
-            background: rgba(5, 5, 5, 0.9);
-            border: 1px solid var(--gold);
-            padding: 30px;
-            z-index: 20;
+        /* Intro Layout (Anubis + Dialogue) */
+        #intro-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%; height: 100%;
+            transition: opacity 1s ease;
+        }
+
+        #top-section {
+            flex: 1.2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, rgba(26,26,26,0.6) 0%, rgba(0,0,0,0.9) 80%);
+        }
+
+        #anubis-media {
+            width: 100%; height: 100%;
+            object-fit: contain;
+        }
+
+        #bottom-section {
+            flex: 0.8;
+            background: rgba(5, 5, 5, 0.95);
+            border-top: 2px solid var(--gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             cursor: pointer;
-            display: none; /* Hidden until video ends */
-            box-shadow: inset 0 0 20px rgba(197, 160, 89, 0.2), 0 0 40px rgba(0,0,0,1);
-            backdrop-filter: blur(10px);
         }
 
-        #text-content {
-            font-size: 1.6rem;
-            color: #efefef;
-            min-height: 80px;
+        #dialogue-container {
+            width: 90%; max-width: 600px;
+            border: 1px solid rgba(197, 160, 89, 0.4);
+            padding: 20px;
+            position: relative;
         }
 
-        .arrow {
-            position: absolute;
-            bottom: 15px;
-            right: 20px;
-            width: 0; height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 12px solid var(--gold);
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+        #text-content { font-size: 1.5rem; line-height: 1.4; color: #efefef; }
 
         /* Catalog Layout */
         #catalog {
@@ -108,51 +77,81 @@
             top: 50%; left: 0;
             transform: translateY(-50%);
             width: 100%;
-            z-index: 15;
-            display: none;
-            overflow-x: scroll;
+            display: none; /* Hidden until Anubis is done */
+            overflow-x: auto;
             scrollbar-width: none;
+            z-index: 10;
         }
 
-        .catalog-slider { display: flex; padding: 0 40vw; }
+        .catalog-slider {
+            display: flex;
+            padding: 0 40vw;
+            gap: 50px;
+        }
 
+        /* Transparent Glass Cards */
         .casket-card {
-            flex: 0 0 280px;
-            margin: 0 40px;
-            height: 380px;
-            background: rgba(0, 0, 139, 0.1);
+            flex: 0 0 260px;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.03); /* Transparent */
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: 0.5s;
             text-decoration: none;
+            transition: 0.5s;
         }
 
         .casket-card.active {
-            transform: scale(1.15);
+            background: rgba(0, 243, 255, 0.08);
             border-color: var(--cyan);
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            transform: scale(1.1);
         }
 
-        .label { font-family: 'Cinzel', serif; letter-spacing: 3px; color: #fff; margin-top: 20px; text-align: center; }
+        .icon-wrapper {
+            font-size: 4rem;
+            color: var(--gold);
+            opacity: 0.8;
+            margin-bottom: 20px;
+            transition: 0.5s;
+        }
+
+        .casket-card.active .icon-wrapper {
+            color: var(--cyan);
+            opacity: 1;
+            filter: drop-shadow(0 0 10px var(--cyan));
+        }
+
+        .label {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 3px;
+            color: #fff;
+            text-align: center;
+        }
+
+        #catalog::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="intro-layer">
-        <video id="intro-video" playsinline>
-            <source src="https://files.catbox.moe/znctv1.mp4" type="video/mp4">
-        </video>
-        <button id="skip-btn" onclick="endIntro()">SKIP TO AFTERLIFE</button>
-    </div>
-
     <canvas id="elysium-canvas"></canvas>
 
-    <div id="dialogue-box" onclick="nextDialogue()">
-        <div id="text-content"></div>
-        <div class="arrow"></div>
+    <div id="intro-container">
+        <div id="top-section">
+            <video id="anubis-media" autoplay muted loop playsinline>
+                <source src="https://files.catbox.moe/znctv1.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div id="bottom-section" onclick="nextDialogue()">
+            <div id="dialogue-container">
+                <p id="text-content"></p>
+                <div style="text-align:right; font-family:'Cinzel'; font-size:0.7rem; color:var(--gold);">CONTINUE ></div>
+            </div>
+        </div>
     </div>
 
     <div id="catalog">
@@ -163,54 +162,37 @@
     <script type="module">
         import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-        // --- Scene Setup ---
+        // --- Three.js Background Logic ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('elysium-canvas'), antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('elysium-canvas').appendChild(renderer.domElement);
 
-        const grid = new THREE.GridHelper(100, 50, 0x00f3ff, 0x050505);
+        // Neon Grid
+        const grid = new THREE.GridHelper(100, 40, 0x00f3ff, 0x050505);
         grid.position.y = -2;
         scene.add(grid);
 
-        const portalGeo = new THREE.TorusGeometry(5, 0.05, 16, 100);
-        const portalMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.5 });
+        // Glowing Portal in distance
+        const portalGeo = new THREE.TorusGeometry(5, 0.02, 16, 100);
+        const portalMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff });
         const portal = new THREE.Mesh(portalGeo, portalMat);
         portal.position.z = -15;
         scene.add(portal);
 
-        camera.position.z = 15;
+        camera.position.z = 10;
+        camera.position.y = 1;
 
         function animate() {
             requestAnimationFrame(animate);
-            portal.rotation.z += 0.002;
-            grid.position.z += 0.04;
-            if(grid.position.z > 2) grid.position.z = 0;
+            grid.position.z += 0.05;
+            if(grid.position.z > 2.5) grid.position.z = 0;
+            portal.rotation.z += 0.01;
             renderer.render(scene, camera);
         }
         animate();
 
-        // --- Sequence Logic ---
-        const video = document.getElementById('intro-video');
-        const introLayer = document.getElementById('intro-layer');
-        const dialogueBox = document.getElementById('dialogue-box');
-
-        // Auto-end intro when video finishes
-        video.onended = () => endIntro();
-
-        window.endIntro = function() {
-            introLayer.style.opacity = '0';
-            setTimeout(() => {
-                introLayer.style.visibility = 'hidden';
-                dialogueBox.style.display = 'block';
-                startDialogue();
-            }, 1500);
-        };
-
-        // Start video on first user interaction (browser policy)
-        window.onclick = () => { if(video.paused && !introLayer.style.visibility) video.play(); };
-
+        // --- Dialogue & Catalog Logic ---
         const script = [
             "Hi, I'm <span style='color:#c5a059'>Anubis</span>!",
             "Welcome to the afterlife.",
@@ -218,51 +200,53 @@
             "\"Funerals are a never dying industry.\"",
             "\"You can pick your perma-bed below.\"",
             "We recommend memory foam linings or you will not be granted access to <span style='color:#c5a059'>ELYSIUM</span>.",
-            "No cheap skates allowed, unless cheap skates are why you're here."
+            "No cheap skates allowed..."
         ];
 
         let step = 0;
-        function startDialogue() {
-            nextDialogue();
-        }
-
         window.nextDialogue = function() {
             if(step < script.length) {
                 document.getElementById('text-content').innerHTML = script[step];
                 step++;
             } else {
-                dialogueBox.style.display = 'none';
-                document.getElementById('catalog').style.display = 'block';
-                // Move camera forward into the portal
-                gsap.to(camera.position, {z: 5, duration: 2.5, ease: "expo.out"});
+                // Exit Intro, Enter Catalog
+                document.getElementById('intro-container').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('intro-container').style.display = 'none';
+                    document.getElementById('catalog').style.display = 'block';
+                }, 1000);
             }
         };
 
-        // --- Populate Catalog ---
         const vendors = [
             { name: "Titan Casket", url: "https://titancasket.com", icon: "fa-box" },
             { name: "Trusted Caskets", url: "https://trustedcaskets.com", icon: "fa-cross" },
-            { name: "Overnight Caskets", url: "https://overnightcaskets.com", icon: "fa-bed" }
+            { name: "Overnight Caskets", url: "https://overnightcaskets.com", icon: "fa-bed" },
+            { name: "Casket Depot", url: "https://casketdepot.ca", icon: "fa-shield" }
         ];
-        const container = document.getElementById('slider-inner');
+
+        const slider = document.getElementById('slider-inner');
         vendors.forEach(v => {
             const card = document.createElement('a');
             card.className = 'casket-card';
             card.href = v.url;
             card.target = "_blank";
-            card.innerHTML = `<i class="fa-solid ${v.icon}" style="font-size:3rem; color:var(--gold)"></i><div class="label">${v.name}</div>`;
-            container.appendChild(card);
+            card.innerHTML = `<div class="icon-wrapper"><i class="fa-solid ${v.icon}"></i></div><div class="label">${v.name}</div>`;
+            slider.appendChild(card);
         });
 
-        // Highlight Logic
-        document.getElementById('catalog').onscroll = () => {
+        // Center Highlight Logic
+        document.getElementById('catalog').addEventListener('scroll', () => {
             const cards = document.querySelectorAll('.casket-card');
             cards.forEach(card => {
-                const dist = Math.abs(card.getBoundingClientRect().left + 140 - window.innerWidth/2);
+                const rect = card.getBoundingClientRect();
+                const center = rect.left + rect.width / 2;
+                const dist = Math.abs(center - window.innerWidth/2);
                 card.classList.toggle('active', dist < 150);
             });
-        };
+        });
+
+        window.onload = nextDialogue;
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </body>
 </html>
