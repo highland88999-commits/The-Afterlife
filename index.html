@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elysium Odyssey — Casket Catalog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond:ital,wght@0,400;1,500&display=swap');
+
+        :root {
+            --hologram-blue: #00f3ff;
+            --black-bloom: rgba(0, 0, 0, 0.88);
+            --glow: 0 0 30px rgba(0, 243, 255, 0.4);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            font-family: 'EB Garamond', serif;
+            background: #000;
+            color: #fff;
+        }
+
+        /* Elysium Background (Three.js Canvas) */
+        #elysium-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -3;
+        }
+
+        /* Slowed Video Overlay */
+        #bg-video {
+            position: fixed;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            transform: translate(-50%, -50%);
+            z-index: -2;
+            filter: brightness(0.45) grayscale(0.25);
+            object-fit: cover;
+            opacity: 0.85;
+        }
+
+        /* Anubis Dialogue Box (Mandatory Click-Through) */
+        #dialogue-box {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 720px;
+            height: 160px;
+            background: rgba(15, 15, 15, 0.96);
+            border: 4px double #c5a059;
+            padding: 25px 30px;
+            box-sizing: border-box;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 0 40px rgba(197, 160, 89, 0.3);
+            transition: all 0.4s;
+        }
+
+        #dialogue-box:hover {
+            box-shadow: 0 0 50px rgba(197, 160, 89, 0.5);
+        }
+
+        #text-content {
+            color: #e0e0e0;
+            font-size: 1.45rem;
+            line-height: 1.45;
+            margin: 0;
+            text-shadow: 0 0 8px #c5a059;
+        }
+
+        .arrow {
+            position: absolute;
+            bottom: 12px;
+            right: 25px;
+            width: 0; height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 14px solid #c5a059;
+            animation: bounce 0.9s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(6px); }
+        }
+
+        /* Casket Catalog Grid (appears ONLY after full dialogue) */
+        #catalog {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 15;
+            display: none;
+            padding: 80px 40px;
+            overflow-y: auto;
+            background: radial-gradient(circle, transparent 30%, rgba(5,5,5,0.85) 80%);
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .casket-card {
+            aspect-ratio: 4/4.2;
+            background: rgba(0, 0, 139, 0.35); /* dark blue transparent shader */
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(197, 160, 89, 0.4);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0, 0, 139, 0.3);
+        }
+
+        .casket-card:hover {
+            transform: scale(1.08) translateY(-10px);
+            border-color: #c5a059;
+            box-shadow: 0 0 50px rgba(197, 160, 89, 0.6);
+        }
+
+        .casket-card .video-mask {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .casket-card .masked-video {
+            width: 88%; height: 88%;
+            object-fit: cover;
+            opacity: 0.75;
+            filter: brightness(0.9);
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="%23fff"/></svg>');
+            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="%23fff"/></svg>');
+        }
+
+        .casket-card .icon-wrapper {
+            position: relative;
+            z-index: 2;
+            font-size: 5rem;
+            color: #c5a059;
+            filter: drop-shadow(0 0 15px #c5a059);
+            margin-bottom: 15px;
+        }
+
+        .casket-card .label {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-align: center;
+            opacity: 0.95;
+            font-family: 'Cinzel', serif;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Elysium Background (Three.js) -->
+    <canvas id="elysium-canvas"></canvas>
+
+    <!-- Slowed Video Overlay -->
+    <video muted loop playsinline id="bg-video">
+        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+    </video>
+
+    <!-- Anubis Dialogue Box (Mandatory Click-Through) -->
+    <div id="dialogue-box" onclick="nextDialogue()">
+        <p id="text-content"></p>
+        <div class="arrow"></div>
+    </div>
+
+    <!-- Casket Catalog (Hidden until dialogue complete) -->
+    <div id="catalog">
+        <div class="catalog-grid">
+
+            <!-- ALL websites from the thread – none left out -->
+            <a href="https://titancasket.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
+                <div class="label">Titan Casket</div>
+            </a>
+
+            <a href="https://trustedcaskets.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
+                <div class="label">Trusted Caskets</div>
+            </a>
+
+            <a href="https://www.overnightcaskets.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
+                <div class="label">Overnight Caskets</div>
+            </a>
+
+            <a href="https://solacecaskets.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
+                <div class="label">Solace Caskets</div>
+            </a>
+
+            <a href="https://www.bestpricecaskets.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
+                <div class="label">Best Price Caskets</div>
+            </a>
+
+            <a href="https://www.costco.ca/caskets.html" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
+                <div class="label">Costco Funeral Services</div>
+            </a>
+
+            <a href="https://casketdepot.ca" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
+                <div class="label">Casket Depot</div>
+            </a>
+
+            <a href="https://www.havencasket.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
+                <div class="label">Haven Casket &amp; Monument</div>
+            </a>
+
+            <a href="https://casketoutlet.ca" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
+                <div class="label">Casket Outlet</div>
+            </a>
+
+            <a href="https://www.northerncasket.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
+                <div class="label">Northern Casket</div>
+            </a>
+
+            <a href="https://www.memorials.com" class="casket-card" target="_blank">
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
+                </div>
+                <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
+                <div class="label">Memorials.com</div>
+            </a>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+
+        // Elysium Three.js Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('elysium-canvas').appendChild(renderer.domElement);
+
+        scene.fog = new THREE.FogExp2(0x050505, 0.002);
+
+        // Starfield
+        const starCount = 15000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(starCount * 3);
+        const colors = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 2000;
+            colors[i] = Math.random();
+        }
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 1.5,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.85,
+            blending: THREE.AdditiveBlending
+        });
+
+        const starField = new THREE.Points(geometry, material);
+        scene.add(starField);
+
+        // Gate Glow
+        const gateGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(12, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xc5a059, transparent: true, opacity: 0.12 })
+        );
+        scene.add(gateGlow);
+
+        const pointLight = new THREE.PointLight(0xc5a059, 3, 600);
+        scene.add(pointLight);
+
+        camera.position.z = 120;
+
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.006;
+
+            starField.rotation.y += 0.0004;
+            starField.rotation.z += 0.00015;
+
+            const pulse = Math.sin(time * 1.8) * 6;
+            gateGlow.scale.set(1 + pulse * 0.08, 1 + pulse * 0.08, 1 + pulse * 0.08);
+
+            camera.position.z -= 0.12;
+            if (camera.position.z < -600) camera.position.z = 120;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+    <script>
+        // Slow the video (0.3x speed)
+        const video = document.getElementById('bg-video');
+        video.playbackRate = 0.3;
+        video.play();
+
+        // Anubis Dialogue (mandatory click-through)
+        const script = [
+            "Hi, I'm <span style='color:#c5a059'>Anubis</span>!",
+            "Welcome to the afterlife.",
+            "Here you can purchase caskets.",
+            "\"Funerals are a never dying industry.\"",
+            "\"You can pick your perma-bed below.\"",
+            "We recommend memory foam linings or you will not be granted access to <span style='color:#c5a059'>ELYSIUM</span>.",
+            "Sorry, but no cheap skates allowed, unless cheap skates are the reason you are shopping today."
+        ];
+
+        let currentStep = 0;
+        const textElement = document.getElementById('text-content');
+        const dialogueBox = document.getElementById('dialogue-box');
+        const catalog = document.getElementById('catalog');
+
+        function typeWriter(text) {
+            textElement.innerHTML = text;
+        }
+
+        function nextDialogue() {
+            if (currentStep < script.length) {
+                typeWriter(script[currentStep]);
+                currentStep++;
+            } else {
+                // Dialogue complete → unlock catalog
+                dialogueBox.style.opacity = '0';
+                setTimeout(() => {
+                    dialogueBox.style.display = 'none';
+                    catalog.style.display = 'block';
+                }, 600);
+            }
+        }
+
+        // Start first line
+        window.onload = () => {
+            nextDialogue();
+        };
+    </script>
+</body>
+</html>
