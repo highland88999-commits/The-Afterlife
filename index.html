@@ -20,17 +20,31 @@
             color: #fff;
             font-family: 'EB Garamond', serif;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Background Three.js Canvas */
+        /* Interaction Shield (Fixes Audio Block) */
+        #start-shield {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* Background Three.js */
         #elysium-canvas {
             position: fixed;
             top: 0; left: 0;
-            z-index: -1; /* Behind everything */
+            z-index: -1;
             width: 100%; height: 100%;
         }
 
-        /* Intro Layout (Anubis + Dialogue) */
+        /* Device Adaptable Intro */
         #intro-container {
             display: flex;
             flex-direction: column;
@@ -43,12 +57,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle, rgba(26,26,26,0.6) 0%, rgba(0,0,0,0.9) 80%);
+            overflow: hidden;
         }
 
         #anubis-media {
-            width: 100%; height: 100%;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Responsive scaling */
         }
 
         #bottom-section {
@@ -58,141 +73,140 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             cursor: pointer;
         }
 
         #dialogue-container {
-            width: 90%; max-width: 600px;
+            width: 95%; max-width: 600px;
             border: 1px solid rgba(197, 160, 89, 0.4);
-            padding: 20px;
+            padding: 15px;
             position: relative;
         }
 
-        #text-content { font-size: 1.5rem; line-height: 1.4; color: #efefef; }
+        #text-content { font-size: 1.3rem; line-height: 1.4; color: #efefef; }
 
-        /* Catalog Layout */
+        /* VERTICAL CATALOG SLIDER */
         #catalog {
             position: absolute;
-            top: 50%; left: 0;
-            transform: translateY(-50%);
-            width: 100%;
-            display: none; /* Hidden until Anubis is done */
-            overflow-x: auto;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
             scrollbar-width: none;
             z-index: 10;
         }
 
         .catalog-slider {
             display: flex;
-            padding: 0 40vw;
-            gap: 50px;
+            flex-direction: column;
+            align-items: center;
+            padding: 50vh 0; /* Padding allows first/last cards to center */
+            gap: 40px;
         }
 
-        /* Transparent Glass Cards */
         .casket-card {
-            flex: 0 0 260px;
-            height: 350px;
-            background: rgba(255, 255, 255, 0.03); /* Transparent */
-            backdrop-filter: blur(8px);
+            flex: 0 0 300px;
+            width: 80%;
+            max-width: 320px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(0, 243, 255, 0.2);
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            transition: 0.5s;
+            transition: 0.4s ease;
+            scroll-snap-align: center;
         }
 
         .casket-card.active {
             background: rgba(0, 243, 255, 0.08);
             border-color: var(--cyan);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
-            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.2);
+            transform: scale(1.05);
         }
 
         .icon-wrapper {
-            font-size: 4rem;
+            font-size: 3.5rem;
             color: var(--gold);
-            opacity: 0.8;
-            margin-bottom: 20px;
-            transition: 0.5s;
+            margin-bottom: 15px;
         }
 
         .casket-card.active .icon-wrapper {
             color: var(--cyan);
-            opacity: 1;
-            filter: drop-shadow(0 0 10px var(--cyan));
+            filter: drop-shadow(0 0 8px var(--cyan));
         }
 
-        .label {
-            font-family: 'Cinzel', serif;
-            letter-spacing: 3px;
-            color: #fff;
-            text-align: center;
-        }
+        .label { font-family: 'Cinzel', serif; letter-spacing: 2px; text-align: center; color: #fff; }
 
         #catalog::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
+    <div id="start-shield" onclick="unlockExperience()">
+        <h1 style="font-family:'Cinzel'; color:var(--gold); letter-spacing:5px;">ENTER ELYSIUM</h1>
+    </div>
+
     <canvas id="elysium-canvas"></canvas>
 
     <div id="intro-container">
         <div id="top-section">
-            <video id="anubis-media" autoplay muted loop playsinline>
+            <video id="anubis-media" loop playsinline>
                 <source src="https://files.catbox.moe/znctv1.mp4" type="video/mp4">
             </video>
         </div>
         <div id="bottom-section" onclick="nextDialogue()">
             <div id="dialogue-container">
                 <p id="text-content"></p>
-                <div style="text-align:right; font-family:'Cinzel'; font-size:0.7rem; color:var(--gold);">CONTINUE ></div>
+                <div style="text-align:right; font-family:'Cinzel'; font-size:0.7rem; color:var(--gold);">[ TAP TO CONTINUE ]</div>
             </div>
         </div>
     </div>
 
     <div id="catalog">
-        <div class="catalog-slider" id="slider-inner">
-            </div>
+        <div class="catalog-slider" id="slider-inner"></div>
     </div>
 
     <script type="module">
         import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-        // --- Three.js Background Logic ---
+        // --- Three.js Scene ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('elysium-canvas'), antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // Neon Grid
         const grid = new THREE.GridHelper(100, 40, 0x00f3ff, 0x050505);
         grid.position.y = -2;
         scene.add(grid);
-
-        // Glowing Portal in distance
-        const portalGeo = new THREE.TorusGeometry(5, 0.02, 16, 100);
-        const portalMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff });
-        const portal = new THREE.Mesh(portalGeo, portalMat);
-        portal.position.z = -15;
-        scene.add(portal);
 
         camera.position.z = 10;
         camera.position.y = 1;
 
         function animate() {
             requestAnimationFrame(animate);
-            grid.position.z += 0.05;
+            grid.position.z += 0.03;
             if(grid.position.z > 2.5) grid.position.z = 0;
-            portal.rotation.z += 0.01;
             renderer.render(scene, camera);
         }
         animate();
 
-        // --- Dialogue & Catalog Logic ---
+        // --- Experience Logic ---
+        const video = document.getElementById('anubis-media');
+        const shield = document.getElementById('start-shield');
+
+        window.unlockExperience = function() {
+            shield.style.display = 'none';
+            video.muted = false; // Audio restored
+            video.play();
+            nextDialogue();
+        };
+
         const script = [
             "Hi, I'm <span style='color:#c5a059'>Anubis</span>!",
             "Welcome to the afterlife.",
@@ -209,11 +223,11 @@
                 document.getElementById('text-content').innerHTML = script[step];
                 step++;
             } else {
-                // Exit Intro, Enter Catalog
                 document.getElementById('intro-container').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('intro-container').style.display = 'none';
                     document.getElementById('catalog').style.display = 'block';
+                    highlightCard(); // Initial check
                 }, 1000);
             }
         };
@@ -222,7 +236,8 @@
             { name: "Titan Casket", url: "https://titancasket.com", icon: "fa-box" },
             { name: "Trusted Caskets", url: "https://trustedcaskets.com", icon: "fa-cross" },
             { name: "Overnight Caskets", url: "https://overnightcaskets.com", icon: "fa-bed" },
-            { name: "Casket Depot", url: "https://casketdepot.ca", icon: "fa-shield" }
+            { name: "Casket Depot", url: "https://casketdepot.ca", icon: "fa-shield" },
+            { name: "Haven Casket", url: "https://havencasket.com", icon: "fa-gem" }
         ];
 
         const slider = document.getElementById('slider-inner');
@@ -235,18 +250,24 @@
             slider.appendChild(card);
         });
 
-        // Center Highlight Logic
-        document.getElementById('catalog').addEventListener('scroll', () => {
+        // Vertical Highlight Logic
+        const catalog = document.getElementById('catalog');
+        function highlightCard() {
             const cards = document.querySelectorAll('.casket-card');
             cards.forEach(card => {
                 const rect = card.getBoundingClientRect();
-                const center = rect.left + rect.width / 2;
-                const dist = Math.abs(center - window.innerWidth/2);
+                const center = rect.top + rect.height / 2;
+                const dist = Math.abs(center - window.innerHeight / 2);
                 card.classList.toggle('active', dist < 150);
             });
-        });
+        }
+        catalog.addEventListener('scroll', highlightCard);
 
-        window.onload = nextDialogue;
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
