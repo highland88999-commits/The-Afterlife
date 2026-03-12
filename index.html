@@ -46,7 +46,7 @@
             text-align: center;
         }
 
-        /* 2. BACKGROUND GRID (Hidden during intro) */
+        /* 2. BACKGROUND GRID */
         #elysium-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -170,7 +170,7 @@
 
     <div id="intro-stage">
         <div id="top-section">
-            <video id="anubis-media" loop playsinline>
+            <video id="anubis-media" playsinline>
                 <source src="https://files.catbox.moe/znctv1.mp4" type="video/mp4">
             </video>
         </div>
@@ -189,7 +189,7 @@
     <script type="module">
         import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-        // --- Three.js Initialization ---
+        // --- Three.js ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('elysium-canvas'), antialias: true, alpha: true });
@@ -208,14 +208,23 @@
         }
         animate();
 
-        // --- Dialogue System ---
+        // --- Audio/Video Management ---
+        const video = document.getElementById('anubis-media');
+        
+        // STOP AUDIO WHEN VIDEO ENDS
+        video.onended = () => {
+            video.muted = true;
+            video.pause();
+            exitIntro(); // Automatically proceed when video ends
+        };
+
         const script = [
             "Hi, I'm <span style='color:#c5a059'>Anubis</span>!",
             "Welcome to the afterlife.",
             "Here you can purchase caskets.",
             "\"Funerals are a never dying industry.\"",
             "\"You can pick your perma-bed below.\"",
-            "We recommend memory foam linings or you will not be granted access to <span style='color:#c5a059'>ELYSIUM</span>.",
+            "We recommend memory foam linings...",
             "The market is open. Make your selection."
         ];
 
@@ -250,11 +259,13 @@
                 typeWriter(script[lineIndex], document.getElementById('text-content'));
                 lineIndex++;
             } else {
+                // Manually exit if script ends before video
                 exitIntro();
             }
         };
 
         function exitIntro() {
+            video.muted = true; // Extra safety for audio silence
             document.getElementById('intro-stage').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('intro-stage').style.display = 'none';
@@ -268,13 +279,11 @@
         window.startExperience = () => {
             document.getElementById('gatekeeper').style.opacity = '0';
             setTimeout(() => document.getElementById('gatekeeper').style.display = 'none', 800);
-            const video = document.getElementById('anubis-media');
             video.muted = false;
             video.play();
             handleDialogueClick();
         };
 
-        // --- Extended Stores ---
         const stores = [
             { n: "Titan Casket", u: "https://titancasket.com", i: "fa-box-open" },
             { n: "Costco Caskets", u: "https://www.costco.com/funeral-caskets.html", i: "fa-cart-shopping" },
