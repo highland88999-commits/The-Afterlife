@@ -23,7 +23,7 @@
             color: #fff;
         }
 
-        /* Elysium Background (Three.js Canvas) */
+        /* Nexus Vortex Three.js Background */
         #elysium-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -31,7 +31,7 @@
             z-index: -3;
         }
 
-        /* Slowed Video Overlay */
+        /* Slowed Video Overlay (0.3× speed) */
         #bg-video {
             position: fixed;
             top: 50%; left: 50%;
@@ -43,7 +43,7 @@
             opacity: 0.85;
         }
 
-        /* Anubis Dialogue Box (Mandatory Click-Through) */
+        /* Anubis Dialogue Box (MANDATORY click-through) */
         #dialogue-box {
             position: absolute;
             bottom: 40px;
@@ -90,7 +90,7 @@
             50% { transform: translateY(6px); }
         }
 
-        /* Casket Catalog Grid (appears ONLY after full dialogue) */
+        /* Casket Catalog (appears ONLY after full dialogue) */
         #catalog {
             position: absolute;
             top: 0; left: 0;
@@ -177,25 +177,25 @@
 </head>
 <body>
 
-    <!-- Elysium Background (Three.js) -->
+    <!-- Nexus Vortex Elysium Background (new Three.js code) -->
     <canvas id="elysium-canvas"></canvas>
 
-    <!-- Slowed Video Overlay -->
+    <!-- Slowed Video Overlay (0.3× speed) -->
     <video muted loop playsinline id="bg-video">
         <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
     </video>
 
-    <!-- Anubis Dialogue Box (Mandatory Click-Through) -->
+    <!-- Anubis Dialogue Box (MANDATORY sequential clicks) -->
     <div id="dialogue-box" onclick="nextDialogue()">
         <p id="text-content"></p>
         <div class="arrow"></div>
     </div>
 
-    <!-- Casket Catalog (Hidden until dialogue complete) -->
+    <!-- Casket Catalog (unlocks only after full dialogue) -->
     <div id="catalog">
         <div class="catalog-grid">
 
-            <!-- ALL websites from the thread – none left out -->
+            <!-- ALL websites from the entire thread – none omitted -->
             <a href="https://titancasket.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -205,7 +205,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
                 <div class="label">Titan Casket</div>
             </a>
-
             <a href="https://trustedcaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -215,7 +214,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
                 <div class="label">Trusted Caskets</div>
             </a>
-
             <a href="https://www.overnightcaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -225,7 +223,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
                 <div class="label">Overnight Caskets</div>
             </a>
-
             <a href="https://solacecaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -235,7 +232,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
                 <div class="label">Solace Caskets</div>
             </a>
-
             <a href="https://www.bestpricecaskets.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -245,7 +241,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
                 <div class="label">Best Price Caskets</div>
             </a>
-
             <a href="https://www.costco.ca/caskets.html" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -255,7 +250,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
                 <div class="label">Costco Funeral Services</div>
             </a>
-
             <a href="https://casketdepot.ca" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -265,7 +259,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-bed"></i></div>
                 <div class="label">Casket Depot</div>
             </a>
-
             <a href="https://www.havencasket.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -275,7 +268,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-gem"></i></div>
                 <div class="label">Haven Casket &amp; Monument</div>
             </a>
-
             <a href="https://casketoutlet.ca" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -285,7 +277,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-box"></i></div>
                 <div class="label">Casket Outlet</div>
             </a>
-
             <a href="https://www.northerncasket.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -295,7 +286,6 @@
                 <div class="icon-wrapper"><i class="fa-solid fa-cross"></i></div>
                 <div class="label">Northern Casket</div>
             </a>
-
             <a href="https://www.memorials.com" class="casket-card" target="_blank">
                 <div class="video-mask">
                     <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
@@ -310,67 +300,64 @@
     </div>
 
     <script type="module">
-        import * as THREE from 'https://cdn.skypack.dev/three@0.136.0';
+        import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-        // Elysium Three.js Scene
+        // Nexus Vortex Scene (exact code from your snippet)
         const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050505, 0.15);
+
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.toneMapping = THREE.ReinhardToneMapping;
         document.getElementById('elysium-canvas').appendChild(renderer.domElement);
 
-        scene.fog = new THREE.FogExp2(0x050505, 0.002);
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
 
-        // Starfield
-        const starCount = 15000;
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(starCount * 3);
-        const colors = new Float32Array(starCount * 3);
-        for (let i = 0; i < starCount * 3; i++) {
-            positions[i] = (Math.random() - 0.5) * 2000;
-            colors[i] = Math.random();
+        const spotLight = new THREE.SpotLight(0xc5a059, 100);
+        spotLight.position.set(0, 10, 5);
+        spotLight.angle = Math.PI / 4;
+        spotLight.penumbra = 0.5;
+        scene.add(spotLight);
+
+        const bluePointLight = new THREE.PointLight(0x00f2ff, 50, 20);
+        bluePointLight.position.set(-5, 2, -5);
+        scene.add(bluePointLight);
+
+        const floorGeo = new THREE.PlaneGeometry(100, 100);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.1, metalness: 0.8 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        scene.add(floor);
+
+        const ringGeo = new THREE.TorusGeometry(3, 0.05, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2ff });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.position.set(0, 3.5, -8);
+        scene.add(ring);
+
+        const particlesGeo = new THREE.BufferGeometry();
+        const particlesCount = 500;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 20;
         }
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMat = new THREE.PointsMaterial({ size: 0.02, color: 0x00f2ff, transparent: true, opacity: 0.6 });
+        const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+        scene.add(particlesMesh);
 
-        const material = new THREE.PointsMaterial({
-            size: 1.5,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.85,
-            blending: THREE.AdditiveBlending
-        });
+        camera.position.set(0, 2, 8);
+        camera.lookAt(0, 3, -8);
 
-        const starField = new THREE.Points(geometry, material);
-        scene.add(starField);
-
-        // Gate Glow
-        const gateGlow = new THREE.Mesh(
-            new THREE.SphereGeometry(12, 32, 32),
-            new THREE.MeshBasicMaterial({ color: 0xc5a059, transparent: true, opacity: 0.12 })
-        );
-        scene.add(gateGlow);
-
-        const pointLight = new THREE.PointLight(0xc5a059, 3, 600);
-        scene.add(pointLight);
-
-        camera.position.z = 120;
-
-        let time = 0;
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.006;
-
-            starField.rotation.y += 0.0004;
-            starField.rotation.z += 0.00015;
-
-            const pulse = Math.sin(time * 1.8) * 6;
-            gateGlow.scale.set(1 + pulse * 0.08, 1 + pulse * 0.08, 1 + pulse * 0.08);
-
-            camera.position.z -= 0.12;
-            if (camera.position.z < -600) camera.position.z = 120;
-
+            ring.rotation.z += 0.01;
+            ring.rotation.y += 0.005;
+            particlesMesh.rotation.y += 0.001;
+            particlesMesh.position.y += Math.sin(Date.now() * 0.001) * 0.002;
             renderer.render(scene, camera);
         }
         animate();
@@ -383,7 +370,7 @@
     </script>
 
     <script>
-        // Slow the video (0.3x speed)
+        // Slow the video to 0.3× speed
         const video = document.getElementById('bg-video');
         video.playbackRate = 0.3;
         video.play();
@@ -413,7 +400,6 @@
                 typeWriter(script[currentStep]);
                 currentStep++;
             } else {
-                // Dialogue complete → unlock catalog
                 dialogueBox.style.opacity = '0';
                 setTimeout(() => {
                     dialogueBox.style.display = 'none';
@@ -422,10 +408,7 @@
             }
         }
 
-        // Start first line
-        window.onload = () => {
-            nextDialogue();
-        };
+        window.onload = () => nextDialogue();
     </script>
 </body>
 </html>
