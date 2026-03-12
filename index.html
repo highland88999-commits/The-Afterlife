@@ -11,7 +11,6 @@
         :root {
             --gold: #c5a059;
             --cyan: #00f3ff;
-            --bg-dark: #050505;
         }
 
         body, html {
@@ -21,99 +20,93 @@
             color: #fff;
             font-family: 'EB Garamond', serif;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* Initial Audio Unlock */
+        /* 1. INTERACTION SHIELD */
         #gatekeeper {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
             z-index: 5000;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: opacity 1s ease;
+            transition: opacity 0.8s ease;
         }
 
         #gatekeeper h1 {
             font-family: 'Cinzel', serif;
             color: var(--gold);
-            letter-spacing: 8px;
-            text-shadow: 0 0 20px rgba(197, 160, 89, 0.5);
+            letter-spacing: 5px;
+            padding: 20px;
+            border: 1px solid var(--gold);
         }
 
-        /* Background Three.js Layer */
+        /* 2. THREE.JS CANVAS (Fade-in enabled) */
         #elysium-canvas {
             position: fixed;
             top: 0; left: 0;
-            z-index: -1;
+            z-index: 1;
             width: 100%; height: 100%;
-            pointer-events: none;
+            opacity: 0; /* Starts invisible */
+            transition: opacity 2s ease-in;
         }
 
-        /* Intro Sequence Layout */
+        /* 3. INTRO SEQUENCE (Box 1 over Box +) */
         #intro-stage {
+            position: relative;
+            z-index: 10;
             display: flex;
             flex-direction: column;
             width: 100%; height: 100%;
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #000;
+            transition: opacity 1.2s ease-out;
         }
 
-        #anubis-viewport {
-            flex: 1.3;
+        #top-section {
+            flex: 1.2;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle, rgba(20,20,20,0.4) 0%, rgba(0,0,0,1) 90%);
         }
 
         #anubis-media {
             width: 100%; height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 0 30px rgba(0, 243, 255, 0.2));
         }
 
-        #script-viewport {
-            flex: 0.7;
-            background: rgba(5, 5, 5, 0.98);
-            border-top: 1px solid var(--gold);
+        #bottom-section {
+            flex: 0.8;
+            background: #050505;
+            border-top: 2px solid var(--gold);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
             cursor: pointer;
-            box-shadow: 0 -20px 50px rgba(0,0,0,1);
         }
 
         #dialogue-frame {
-            width: 90%; max-width: 650px;
-            border: 1px solid rgba(197, 160, 89, 0.3);
-            padding: 25px;
-            position: relative;
-            background: linear-gradient(to bottom, rgba(197,160,89,0.02), transparent);
+            width: 90%; max-width: 600px;
+            border: 1px solid rgba(197, 160, 89, 0.4);
+            padding: 20px;
         }
 
-        #text-body { 
-            font-size: 1.4rem; 
-            line-height: 1.5; 
-            color: #dcdcdc; 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
+        #text-content { font-size: 1.4rem; line-height: 1.5; color: #efefef; margin: 0; }
 
-        /* VERTICAL CATALOG */
+        /* 4. VERTICAL CATALOG */
         #catalog-portal {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
+            z-index: 20;
             display: none;
             overflow-y: auto;
             scroll-snap-type: y mandatory;
             scrollbar-width: none;
-            z-index: 10;
+            opacity: 0;
+            transition: opacity 1s ease-in;
         }
 
         .vertical-track {
@@ -121,126 +114,99 @@
             flex-direction: column;
             align-items: center;
             padding: 45vh 0;
-            gap: 60px;
+            gap: 40px;
         }
 
-        .casket-item {
+        .casket-card {
             flex: 0 0 280px;
-            width: 85%;
-            max-width: 350px;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 243, 255, 0.15);
-            border-radius: 4px; /* Sharper, more technical look */
+            width: 85%; max-width: 320px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(197, 160, 89, 0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             scroll-snap-align: center;
-            opacity: 0.4;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0.5;
         }
 
-        .casket-item.active {
+        .casket-card.active {
             opacity: 1;
-            background: rgba(0, 243, 255, 0.05);
             border-color: var(--cyan);
-            box-shadow: 0 0 50px rgba(0, 243, 255, 0.25);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.25);
             transform: scale(1.08);
         }
 
-        .item-icon {
-            font-size: 4rem;
-            color: var(--gold);
-            margin-bottom: 20px;
-            transition: 0.5s;
-        }
-
-        .casket-item.active .item-icon {
-            color: var(--cyan);
-            filter: drop-shadow(0 0 15px var(--cyan));
-        }
-
-        .item-label { 
-            font-family: 'Cinzel', serif; 
-            letter-spacing: 4px; 
-            text-align: center; 
-            color: #fff;
-            font-size: 0.85rem;
-        }
+        .icon-box { font-size: 3.5rem; color: var(--gold); margin-bottom: 15px; transition: 0.3s; }
+        .casket-card.active .icon-box { color: var(--cyan); filter: drop-shadow(0 0 8px var(--cyan)); }
+        .label { font-family: 'Cinzel', serif; color: #fff; letter-spacing: 2px; }
 
         #catalog-portal::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="gatekeeper" onclick="initExperience()">
+    <div id="gatekeeper" onclick="startApp()">
         <h1>ENTER ELYSIUM</h1>
-        <p style="font-family:'EB Garamond'; font-style:italic; color:rgba(255,255,255,0.5);">Tap to begin the transition</p>
     </div>
 
     <canvas id="elysium-canvas"></canvas>
 
     <div id="intro-stage">
-        <div id="anubis-viewport">
+        <div id="top-section">
             <video id="anubis-media" loop playsinline>
                 <source src="https://files.catbox.moe/znctv1.mp4" type="video/mp4">
             </video>
         </div>
-        <div id="script-viewport" onclick="proceedText()">
+        <div id="bottom-section" onclick="nextStep()">
             <div id="dialogue-frame">
-                <p id="text-body"></p>
-                <div style="position:absolute; bottom:10px; right:15px; color:var(--gold); font-size:0.6rem; letter-spacing:2px;">[ NEXUS LINK ACTIVE ]</div>
+                <p id="text-content"></p>
+                <p style="text-align:right; font-size:0.6rem; color:var(--gold); margin-top:15px; font-family:'Cinzel';">[ TAP TO PROCEED ]</p>
             </div>
         </div>
     </div>
 
     <div id="catalog-portal">
-        <div class="vertical-track" id="casket-list"></div>
+        <div class="vertical-track" id="card-list"></div>
     </div>
 
     <script type="module">
         import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-        // --- THE NEON AFTERLIFE (Three.js) ---
+        // --- Three.js Engine ---
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('elysium-canvas'), antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        // Infinite Grid
-        const grid = new THREE.GridHelper(100, 50, 0x00f3ff, 0x080808);
+        const grid = new THREE.GridHelper(100, 45, 0x00f3ff, 0x050505);
         grid.position.y = -2;
         scene.add(grid);
+        camera.position.z = 10; camera.position.y = 1;
 
-        // Volumetric Fog for UE5 feel
-        scene.fog = new THREE.FogExp2(0x000000, 0.08);
-
-        camera.position.z = 12;
-        camera.position.y = 1.5;
-
-        function renderLoop() {
-            requestAnimationFrame(renderLoop);
-            grid.position.z += 0.05; // Speed of the transition
-            if(grid.position.z > 2) grid.position.z = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            grid.position.z += 0.04;
+            if(grid.position.z > 2.22) grid.position.z = 0;
             renderer.render(scene, camera);
         }
-        renderLoop();
+        animate();
 
-        // --- SYSTEM LOGIC ---
+        // --- App Logic ---
         const video = document.getElementById('anubis-media');
-        const gate = document.getElementById('gatekeeper');
         const stage = document.getElementById('intro-stage');
+        const canvas = document.getElementById('elysium-canvas');
         const portal = document.getElementById('catalog-portal');
 
-        window.initExperience = function() {
-            gate.style.opacity = '0';
-            setTimeout(() => gate.style.display = 'none', 1000);
+        window.startApp = () => {
+            document.getElementById('gatekeeper').style.opacity = '0';
+            setTimeout(() => document.getElementById('gatekeeper').style.display = 'none', 800);
             video.muted = false;
             video.play();
-            proceedText();
+            nextStep();
         };
 
         const script = [
@@ -250,53 +216,53 @@
             "\"Funerals are a never dying industry.\"",
             "\"You can pick your perma-bed below.\"",
             "We recommend memory foam linings or you will not be granted access to <span style='color:#c5a059'>ELYSIUM</span>.",
-            "The gate is open. Choose wisely."
+            "Descend into the Nexus. Your bed awaits."
         ];
 
-        let index = 0;
-        window.proceedText = function() {
-            if(index < script.length) {
-                document.getElementById('text-body').innerHTML = script[index];
-                index++;
+        let i = 0;
+        window.nextStep = () => {
+            if(i < script.length) {
+                document.getElementById('text-content').innerHTML = script[i];
+                i++;
             } else {
+                // THE TRANSITION
                 stage.style.opacity = '0';
                 setTimeout(() => {
                     stage.style.display = 'none';
+                    canvas.style.opacity = '1'; // Fades in the 3D grid
                     portal.style.display = 'block';
-                    updateScroll();
+                    setTimeout(() => portal.style.opacity = '1', 100); // Fades in the UI
+                    updateCards();
                 }, 1200);
             }
         };
 
-        // --- CATALOG DATA ---
-        const links = [
-            { n: "Titan Casket", u: "https://titancasket.com", i: "fa-box-archive" },
+        const vendors = [
+            { n: "Titan Casket", u: "https://titancasket.com", i: "fa-box-open" },
             { n: "Trusted Caskets", u: "https://trustedcaskets.com", i: "fa-cross" },
             { n: "Overnight Caskets", u: "https://overnightcaskets.com", i: "fa-truck-fast" },
-            { n: "Casket Depot", u: "https://casketdepot.ca", i: "fa-vault" },
-            { n: "Haven Casket", u: "https://havencasket.com", i: "fa-dove" }
+            { n: "Casket Depot", u: "https://casketdepot.ca", i: "fa-vault" }
         ];
 
-        const list = document.getElementById('casket-list');
-        links.forEach(l => {
-            const card = document.createElement('a');
-            card.className = 'casket-item';
-            card.href = l.u;
-            card.target = "_blank";
-            card.innerHTML = `<div class="item-icon"><i class="fa-solid ${l.i}"></i></div><div class="item-label">${l.n.toUpperCase()}</div>`;
-            list.appendChild(card);
+        const list = document.getElementById('card-list');
+        vendors.forEach(v => {
+            const a = document.createElement('a');
+            a.className = 'casket-card';
+            a.href = v.u; a.target = "_blank";
+            a.innerHTML = `<div class="icon-box"><i class="fa-solid ${v.i}"></i></div><div class="label">${v.n}</div>`;
+            list.appendChild(a);
         });
 
-        // Vertical Centering Logic
-        function updateScroll() {
-            const items = document.querySelectorAll('.casket-item');
-            items.forEach(item => {
-                const center = item.getBoundingClientRect().top + item.offsetHeight / 2;
-                const dist = Math.abs(center - window.innerHeight / 2);
-                item.classList.toggle('active', dist < 140);
+        function updateCards() {
+            const cards = document.querySelectorAll('.casket-card');
+            cards.forEach(c => {
+                const r = c.getBoundingClientRect();
+                const m = r.top + r.height / 2;
+                const d = Math.abs(m - window.innerHeight / 2);
+                c.classList.toggle('active', d < 150);
             });
         }
-        portal.addEventListener('scroll', updateScroll);
+        portal.addEventListener('scroll', updateCards);
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
